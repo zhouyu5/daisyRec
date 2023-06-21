@@ -39,3 +39,5 @@ binary_inter: True
 positive_threshold: ~
 
 metrics: ["recall","mrr","ndcg","hit","precision"]
+
+export_emb: False
