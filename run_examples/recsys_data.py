@@ -92,12 +92,65 @@ def filter_df(df_train):
     return df_train
 
 
+def fit_transform(encoder, is_combine, ori_columns, 
+                  after_columns, df_train, df_test=None):
+    if is_combine and df_test is not None:
+        df_all = pd.concat((df_train, df_test), ignore_index=True)
+        encoder.fit(df_all[ori_columns])
+        del df_all
+    else:
+        encoder.fit(df_train[ori_columns])
+    
+    df_train[after_columns] = encoder.transform(df_train[ori_columns])
+    if df_test is not None:
+        df_test[after_columns] = encoder.transform(df_test[ori_columns])
+
+    return df_train, df_test
+
+
+def categorify_cat_feat(df_train, df_test=None):
+    def get_cat_id(cat_columns, df_train, is_combine=True, df_test=None):
+        if not cat_columns:
+            return df_train, df_test
+        fill_value = 0
+        cat_enc = Pipeline(steps=[
+            ("imputer", SimpleImputer(strategy="constant", fill_value=fill_value)),
+            (
+                "categorify-1", 
+                 preprocessing.OrdinalEncoder(
+                     dtype=np.int64,
+                     # encoded_missing_value=-1,
+                     handle_unknown='use_encoded_value',
+                     unknown_value=-1,
+                    #  min_frequency=1,
+                 )
+            ),
+        ])
+
+        df_train, df_test = fit_transform(cat_enc, is_combine, cat_columns, 
+                  cat_columns, df_train, df_test)
+        
+        if not is_combine:
+            for column in cat_columns:
+                if -1 in df_test[column].unique():
+                    df_train[column] += 1
+                    df_test[column] += 1
+        return df_train, df_test
+        
+    basic_cat_columns = ['f_2', 'f_15']
+    df_train, df_test = get_cat_id(basic_cat_columns, df_train, is_combine=IS_COMBINE, df_test=df_test)
+    
+    return df_train, df_test
+
+
 def get_processed_df(df_train, df_test=None):
 
     df_train = add_rating(df_train)
 
     if IS_FILTER:
         df_train = filter_df(df_train)
+
+    df_train, df_test = categorify_cat_feat(df_train, df_test)
 
     return df_train, df_test
 
@@ -148,6 +201,7 @@ def main(argv: List[str]) -> None:
 if __name__ == "__main__":
     TEST_DATE = 67
     IS_FILTER = False
+    IS_COMBINE = False
     main(sys.argv[1:])
 
 
