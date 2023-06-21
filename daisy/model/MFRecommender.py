@@ -66,6 +66,13 @@ class MF(GeneralRecommender):
         pred = (embed_user * embed_item).sum(dim=-1)
 
         return pred
+    
+    def gen_user_item_emb(self, batch):
+        user = batch[0].to(self.device)
+        item = batch[1].to(self.device)
+        embed_user = self.embed_user(user)
+        embed_item = self.embed_item(item)
+        return torch.cat([embed_user, embed_item], -1)
 
     def calc_loss(self, batch):
         user = batch[0].to(self.device)

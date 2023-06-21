@@ -3,6 +3,7 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
+import numpy as np
 
 from daisy.utils.loss import BPRLoss, TOP1Loss, HingeLoss
 
@@ -135,6 +136,23 @@ class GeneralRecommender(AbstractRecommender):
                 break
             else:
                 last_loss = current_loss
+
+    def gen_emb(self, test_loader):
+        """
+        :param test_loader: The dataloader of callbacks.
+        :param callback: export embedding function.
+        :return: Numpy array(s) of embeddings.
+        """
+        self.eval()
+        record_embs = []
+        with torch.no_grad():
+            pbar = tqdm(test_loader)
+            pbar.set_description(f'[Export embedding]')
+            for batch in pbar:
+                record_emb = self.gen_user_item_emb(batch).cpu().data.numpy()
+                record_embs.append(record_emb)
+
+        return np.concatenate(record_embs, axis=0).astype("float64")
 
 class AERecommender(GeneralRecommender):
     def __init__(self, config):
