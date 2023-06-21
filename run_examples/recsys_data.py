@@ -140,7 +140,7 @@ def main(argv: List[str]) -> None:
 
     train_df, test_df = get_processed_df(train_df, test_df)
 
-    save_output_df(train_df, test_df, TEST_DATE, output_dir)
+    save_output_df(train_df, test_df, output_dir)
 
     return
 
