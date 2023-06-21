@@ -24,6 +24,17 @@ class RawDataReader(object):
         ensure_dir(self.ds_path)
         self.logger.info(f'Current data path is: {self.ds_path}, make sure you put the right raw data into it...')
 
+    def get_export_data(self):
+        df = pd.DataFrame()
+        if self.src == 'ml-100k':
+            fp = f'{self.ds_path}export'
+            df = pd.read_csv(fp, sep='\t', header=None,
+                            names=[self.uid_name, self.iid_name, self.inter_name, self.tid_name], engine='python')
+        else:
+            raise NotImplementedError('Invalid Dataset Error')
+        
+        return df
+
     def get_data(self):
         df = pd.DataFrame()
         if self.src == 'ml-100k':
