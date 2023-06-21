@@ -162,9 +162,9 @@ def save_output_df(df_train, df_test, output_dir):
     train_save_path = f'{output_dir}/u.data'
     export_save_path = f'{output_dir}/export'
 
-    df_train = df_train[train_save_cols]
     df_export = pd.concat((df_train, df_test), ignore_index=True)[export_save_cols]
-
+    df_train = df_train[train_save_cols]
+    
     print('after process shape')
     print(df_train.shape)
     print(df_train.head())
