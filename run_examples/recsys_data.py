@@ -72,7 +72,7 @@ def get_train_test_df(input_dir, test_date):
     return train_df, test_df
 
 
-def add_rating(df_train, df_test=None):
+def add_rating(df_train):
     def f(df):
         label_dict = {
             '00': 0, '10': 1,
@@ -84,36 +84,40 @@ def add_rating(df_train, df_test=None):
         return df    
     
     df_train = f(df_train)
-    if df_test is not None:
-        df_test = f(df_test)
-    
-    return df_train, df_test
+    return df_train
 
 
-def filter_df(df_train, df_test=None):
+def filter_df(df_train):
     df_train = df_train[df_train['rating'] > 0]
-    if df_test is not None:
-        df_test = df_test[df_train['rating'] > 0]
-    return df_train, df_test
+    return df_train
 
 
 def get_processed_df(df_train, df_test=None):
 
-    df_train, df_test = add_rating(df_train, df_test)
+    df_train = add_rating(df_train)
+
+    if IS_FILTER:
+        df_train = filter_df(df_train)
 
     return df_train, df_test
 
 
-def save_output_df(df_train, df_test, test_date, output_dir):
-    save_cols = ['f_15', 'f_2', 'rating', 'f_1']
+def save_output_df(df_train, df_test, output_dir):
+    train_save_cols = ['f_15', 'f_2', 'rating', 'f_1']
+    export_save_cols = ['f_15', 'f_2', 'f_0', 'f_1']
 
     train_save_path = f'{output_dir}/u.data'
-    df_train = df_train[save_cols]
+    export_save_path = f'{output_dir}/export'
+
+    df_train = df_train[train_save_cols]
+    df_export = pd.concat((df_train, df_test), ignore_index=True)[export_save_cols]
 
     print('after process shape')
     print(df_train.shape)
     print(df_train.head())
+
     df_train.to_csv(train_save_path, sep='\t', header=False, index=False)
+    df_export.to_csv(export_save_path, sep='\t', header=False, index=False)
     
 
 def main(argv: List[str]) -> None:
