@@ -134,7 +134,7 @@ def parse_args():
     # other settings
     parser.add_argument('--export_emb', 
                         action='store_true',
-                        help="whether export the embedding of the model")
+                         help="whether export the embedding of the model")
     args = parser.parse_args()
 
     return args
