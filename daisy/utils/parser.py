@@ -131,6 +131,10 @@ def parse_args():
     parser.add_argument("--early_stop",
                         action="store_true",
                         help="whether to activate early stop mechanism")
+    # other settings
+    parser.add_argument('--export_emb', 
+                        action='store_true',
+                        help="whether export the embedding of the model")
     args = parser.parse_args()
 
     return args

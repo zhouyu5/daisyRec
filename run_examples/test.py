@@ -22,6 +22,9 @@ from daisy.utils.sampler import BasicNegtiveSampler, SkipGramNegativeSampler
 from daisy.utils.dataset import get_dataloader, BasicDataset, CandidatesDataset, AEDataset
 from daisy.utils.utils import ensure_dir, get_ur, get_history_matrix, build_candidates_set, get_inter_matrix
 
+import numpy as np
+import pandas as pd
+
 model_config = {
     'mostpop': MostPop,
     'slim': SLiM,
@@ -37,6 +40,23 @@ model_config = {
     'ease': EASE,
     'lightgcn': LightGCN,
 }
+
+
+def export_emb(config, model):
+    if not config['export_emb']: return
+    reader = RawDataReader(config)
+    export_set = reader.get_export_data()
+    export_dataset = BasicDataset(export_set.values.astype(np.int32))
+    export_loader = get_dataloader(export_dataset, batch_size=config['batch_size'], shuffle=True, num_workers=4)
+    
+    emb_df = pd.DataFrame()
+    emb_columns = [f'emb_{i}' for i in range(2 * config['factors'])]
+    emb_df['f_0'] = export_set.iloc[:, 2].values
+    emb_df[emb_columns] = model.gen_emb(export_loader)
+
+    emb_save_path = f"{config['data_path']}{config['dataset']}/emb.csv"
+    emb_df.to_csv(emb_save_path, sep='\t', header=True, index=False)
+    return
 
 if __name__ == '__main__':
     ''' summarize hyper-parameter part (basic yaml + args + model yaml) '''
@@ -130,3 +150,5 @@ if __name__ == '__main__':
 
     results = calc_ranking_results(test_ur, preds, test_u, config)
     results.to_csv(f'{result_save_path}{algo_prefix}_{common_prefix}_kpi_results.csv', index=False)
+
+    export_emb(config, model)
