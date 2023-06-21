@@ -77,8 +77,8 @@ if __name__ == '__main__':
     df = processor.process(df)
     user_num, item_num = processor.user_num, processor.item_num
 
-    config['user_num'] = user_num
-    config['item_num'] = item_num
+    config['user_num'] = user_num + 1
+    config['item_num'] = item_num + 1
 
     ''' Train Test split '''
     splitter = TestSplitter(config)
