@@ -137,7 +137,7 @@ def categorify_cat_feat(df_train, df_test=None):
                     df_test[column] += 1
         return df_train, df_test
         
-    basic_cat_columns = ['f_2', 'f_15']
+    basic_cat_columns = BASIC_CAT_COLUMNS
     df_train, df_test = get_cat_id(basic_cat_columns, df_train, is_combine=IS_COMBINE, df_test=df_test)
     
     return df_train, df_test
@@ -156,8 +156,8 @@ def get_processed_df(df_train, df_test=None):
 
 
 def save_output_df(df_train, df_test, output_dir):
-    train_save_cols = ['f_15', 'f_2', 'rating', 'f_1']
-    export_save_cols = ['f_15', 'f_2', 'f_0', 'f_1']
+    train_save_cols = BASIC_CAT_COLUMNS + ['rating', 'f_1']
+    export_save_cols = BASIC_CAT_COLUMNS + ['f_0', 'f_1']
 
     train_save_path = f'{output_dir}/u.data'
     export_save_path = f'{output_dir}/export'
@@ -204,6 +204,7 @@ if __name__ == "__main__":
     TEST_DATE = 67
     IS_FILTER = False
     IS_COMBINE = False
+    BASIC_CAT_COLUMNS = ['f_15', 'f_6']
     main(sys.argv[1:])
 
 

@@ -52,6 +52,7 @@ def export_emb(config, model):
     emb_df = pd.DataFrame()
     emb_columns = [f'emb_{i}' for i in range(2 * config['factors'])]
     emb_df['f_0'] = export_set.iloc[:, 2].values
+    emb_df['f_1'] = export_set.iloc[:, 3].values
     emb_df[emb_columns] = model.gen_emb(export_loader)
 
     emb_save_path = f"{config['data_path']}{config['dataset']}/emb.csv"
