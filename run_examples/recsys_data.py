@@ -163,6 +163,8 @@ def save_output_df(df_train, df_test, output_dir):
     export_save_path = f'{output_dir}/export'
 
     df_export = pd.concat((df_train, df_test), ignore_index=True)[export_save_cols]
+    for col in export_save_cols:
+        print(f'col: {col}, max value: {df_export[col].max()}')
     df_train = df_train[train_save_cols]
     
     print('after process shape')
