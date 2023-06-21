@@ -5,6 +5,7 @@ __pycache__/
 
 /data/netflix/
 *.zip
+run_examples/data/
 
 time_log.txt
 
